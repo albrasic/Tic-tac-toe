@@ -1,0 +1,308 @@
+<html>	
+    <head>
+        <title>Flask-SocketIO-Game: {{ room }}</title>
+        <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.4.2.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
+        <script type="text/javascript" charset="utf-8">
+            var socket;
+            var score = 0;
+            var control_id = 0;
+            var control_ids = null;
+            var id = -1;
+            var ids = null;
+            var game_id = -1;
+            var sym = null;
+            $(document).ready(function(){
+                socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
+
+                a11 = null;
+                a12 = null;
+                a13 = null;
+                a21 = null;
+                a22 = null;
+                a23 = null;
+                a31 = null;
+                a32 = null;
+                a33 = null;
+
+                $(window).bind('beforeunload', function() {
+	            refresh();
+	        });
+
+                socket.on('connect', function() {
+                    socket.emit('joined', {});
+                });
+                
+                socket.on('status', function(message) {
+                   console.log(message);
+                   if (id == -1) {
+                       console.log(message); 
+		       game_id = message.roomId
+                       sym = message.yourSym;
+	               id = message.yourId;
+                       ids = id.toString();
+                       $('#yourId').text(ids);
+                       score = message.score.toString();
+                       $('#yourScore').text(score);
+                       control_id = message.controlId;
+                       control_ids = control_id.toString();
+		       $('#controlId').text(control_ids);	
+		   }
+		   if (id == message.id) { 
+		       score = message.score.toString();
+                       $('#yourScore').text(score);
+		   }
+                   $('#Messages').append(message.msg);
+                });
+
+		socket.on('question', function(data) {
+		    storeValues(data);
+                    show();
+                    console.log(Object.keys(data).length);
+                    if (Object.keys(data).length > 2) {
+		        control_id = 1 - control_id;
+                        control_ids = control_id.toString();
+		        $('#controlId').text(control_ids);
+                    }	 
+                });
+
+                $('#a11_ans').keyup(function() {
+		    part1 = $('#a11_ans').val();
+                    if (id == control_id && part1.toLowerCase() == sym) {
+			socket.emit('text', {id: id, sym: sym, x: 1, y: 1, gameid:  game_id});
+		    }
+                });
+ 
+                $('#a12_ans').keyup(function() {
+		    part1 = $('#a12_ans').val();
+                    if (id == control_id && part1.toLowerCase() == sym) {
+			socket.emit('text', {id: id, sym: sym, x: 1, y: 2, gameid:  game_id});
+		    }
+                });
+
+                $('#a13_ans').keyup(function() {
+		    part1 = $('#a13_ans').val();
+                    if (id == control_id && part1.toLowerCase() == sym) {
+			socket.emit('text', {id: id, sym: sym, x: 1, y: 3, gameid:  game_id});
+		    }
+                });
+ 		
+                $('#a21_ans').keyup(function() {
+		    part1 = $('#a21_ans').val();
+                    if (id == control_id && part1.toLowerCase() == sym) {
+			socket.emit('text', {id: id, sym: sym, x: 2, y: 1, gameid:  game_id});
+		    }
+                });
+
+                $('#a22_ans').keyup(function() {
+		    part1 = $('#a22_ans').val();
+                    if (id == control_id && part1.toLowerCase() == sym) {
+			socket.emit('text', {id: id, sym: sym, x: 2, y: 2, gameid:  game_id});
+		    }
+                });
+
+                $('#a23_ans').keyup(function() {
+		    part1 = $('#a23_ans').val();
+                    if (id == control_id && part1.toLowerCase() == sym) {
+			socket.emit('text', {id: id, sym: sym, x: 2, y: 3, gameid:  game_id});
+		    }
+                });
+
+                $('#a31_ans').keyup(function() {
+		    part1 = $('#a31_ans').val();
+                    if (id == control_id && part1.toLowerCase() == sym) {
+			socket.emit('text', {id: id, sym: sym, x: 3, y: 1, gameid:  game_id});
+		    }
+                });
+
+                $('#a32_ans').keyup(function() {
+		    part1 = $('#a32_ans').val();
+                    if (id == control_id && part1.toLowerCase() == sym) {
+			socket.emit('text', {id: id, sym: sym, x: 3, y: 2, gameid:  game_id});
+		    }
+                });
+
+                $('#a33_ans').keyup(function() {
+		    part1 = $('#a33_ans').val();
+                    if (id == control_id && part1.toLowerCase() == sym) {
+			socket.emit('text', {id: id, sym: sym, x: 3, y: 3, gameid:  game_id});
+		    }
+                });
+
+	    function storeValues(data) {
+		data = JSON.parse(data);
+		if (typeof data.a11 != 'undefined') {
+		    a11 = data.a11;
+                } else {
+                    a11 = null;
+                }
+		if (typeof data.a12 != 'undefined') {
+		    a12 = data.a12;
+                } else {
+		    a12 = null;
+                }
+		if (typeof data.a13 != 'undefined') {
+		    a13 = data.a13;
+                } else {
+		    a13 = null;
+                }
+		if (typeof data.a21 != 'undefined') {
+		    a21 = data.a21;
+                } else {
+		    a21 = null;
+                }
+		if (typeof data.a22 != 'undefined') {
+		    a22 = data.a22;
+                } else {
+		    a22 = null;
+                }
+		if (typeof data.a13 != 'undefined') {
+		    a23 = data.a23;
+                } else {
+		    a23 = null;
+                }
+		if (typeof data.a31 != 'undefined') {
+		    a31 = data.a31;
+                } else {
+		    a31 = null;
+                }
+		if (typeof data.a32 != 'undefined') {
+		    a32 = data.a32;
+                } else {
+		    a32 = null;
+                }
+		if (typeof data.a33 != 'undefined') {
+		    a33 = data.a33;
+                } else {
+		    a33 = null;
+                }
+	    }
+
+	    function show() {	
+		if (a11 != null) {
+		    $('#a11_sol').text(a11);
+		    $('#a11_sol').show();
+		    $('#a11_ans').hide();
+		} else {
+		    $('#a11_sol').hide();
+		    $('#a11_ans').show();
+		}
+
+		if (a12 != null) {
+		    $('#a12_sol').text(a12);
+		    $('#a12_sol').show();
+		    $('#a12_ans').hide();
+		} else {
+		    $('#a12_sol').hide();
+		    $('#a12_ans').show();
+		}
+
+		if (a13 != null) {
+		    $('#a13_sol').text(a13);
+		    $('#a13_sol').show();
+		    $('#a13_ans').hide();
+		} else {
+		    $('#a13_sol').hide();
+		    $('#a13_ans').show();
+		}
+
+		if (a21 != null) {
+		    $('#a21_sol').text(a21);
+		    $('#a21_sol').show();
+		    $('#a21_ans').hide();
+		} else {
+		    $('#a21_sol').hide();
+		    $('#a21_ans').show();
+		}
+
+		if (a22 != null) {
+		    $('#a22_sol').text(a22);
+		    $('#a22_sol').show();
+		    $('#a22_ans').hide();
+		} else {
+		    $('#a22_sol').hide();
+		    $('#a22_ans').show();
+		}
+
+		if (a23 != null) {
+		    $('#a23_sol').text(a23);
+		    $('#a23_sol').show();
+		    $('#a23_ans').hide();
+		} else {
+		    $('#a23_sol').hide();
+		    $('#a23_ans').show();
+		}
+
+		if (a31 != null) {
+		    $('#a31_sol').text(a31);
+		    $('#a31_sol').show();
+		    $('#a31_ans').hide();
+		} else {
+		    $('#a31_sol').hide();
+		    $('#a31_ans').show();
+		}
+
+		if (a32 != null) {
+		    $('#a32_sol').text(a32);
+		    $('#a32_sol').show();
+		    $('#a32_ans').hide();
+		} else {
+		    $('#a32_sol').hide();
+		    $('#a32_ans').show();
+		}
+
+		if (a33 != null) {
+		    $('#a33_sol').text(a33);
+		    $('#a33_sol').show();
+		    $('#a33_ans').hide();
+		} else {
+		    $('#a33_sol').hide();
+		    $('#a33_ans').show();
+		}
+	    } 
+
+            function refresh() {
+                socket.emit('left', {gameid: game_id});
+            }
+
+            function leave_room() {
+                socket.emit('left', {gameid: game_id}, function() {
+		    id = -1;
+                    socket.disconnect();
+
+                    // go back to the login page
+                    window.location.href = "{{ url_for('main.index') }}";
+                });
+            }
+        });        
+        </script>
+    </head>
+        <body>
+        <h1>Flask-SocketIO-Game: {{ room }}</h1>
+        <table id="chatList" style="width:90%; border: 1px solid black; border-collapse: collapse">
+          <tbody>
+            <tr style="border-bottom: 1px solid black; border-collapse: collapse">            
+              <td style=" width:15%; height: 100%; text-align: right"> <output style="width:100%; height: 100%" id="a11_sol"></td><td style="border-right: 1px solid black; border-collapse: collapse; width:15%; height: 100%"> <input style="width:100%; height: 100%" id="a11_ans"></td>
+              <td style="width:15%; height: 100%; text-align: right"> <output style="width:100%; height: 100%" id="a12_sol"></td><td style="width:15%; height: 100%; border-right: 1px solid black; border-collapse: collapse"> <input style="width:100%; height: 100%" id="a12_ans"></td>
+              <td style="width:15%; height: 100%; text-align: right"> <output style="width:100%; height: 100%" id="a13_sol"></td><td style="width:15%; height: 100%"> <input style="width:100%; height: 100%" id="a13_ans"></td>                        
+            </tr>
+            <tr style="border-bottom: 1px solid black; border-collapse: collapse">            
+              <td style=" width:15%; height: 100%; text-align: right"> <output style="width:100%; height: 100%" id="a21_sol"></td><td style="border-right: 1px solid black; border-collapse: collapse; width:15%; height: 100%"> <input style="width:100%; height: 100%" id="a21_ans"></td>
+              <td style="width:15%; height: 100%; text-align: right"> <output style="width:100%; height: 100%" id="a22_sol"></td><td style="width:15%; height: 100%; border-right: 1px solid black; border-collapse: collapse"> <input style="width:100%; height: 100%" id="a22_ans"></td>
+              <td style="width:15%; height: 100%; text-align: right"> <output style="width:100%; height: 100%" id="a23_sol"></td><td style="width:15%; height: 100%"> <input style="width:100%; height: 100%" id="a23_ans"></td>                       
+            </tr>
+            <tr>            
+              <td style=" width:15%; height: 100%; text-align: right"> <output style="width:100%; height: 100%" id="a31_sol"></td><td style="border-right: 1px solid black; border-collapse: collapse; width:15%; height: 100%"> <input style="width:100%; height: 100%" id="a31_ans"></td>
+              <td style="width:15%; height: 100%; text-align: right"> <output style="width:100%; height: 100%" id="a32_sol"></td><td style="width:15%; height: 100%; border-right: 1px solid black; border-collapse: collapse"> <input style="width:100%; height: 100%" id="a32_ans"></td>
+              <td style="width:15%; height: 100%; text-align: right"> <output style="width:100%; height: 100%" id="a33_sol"></td><td style="width:15%; height: 100%"> <input style="width:100%; height: 100%" id="a33_ans"></td>        
+            </tr>
+          </tbody>
+        </table>
+        
+        <div>Your id number: <a id="yourId"></a></div>
+	<div>Your score: <a id="yourScore"></a></div>
+	<div>This turn is on id number: <a id="controlId"></a></div>
+        <a href="#" onclick="leave_room();">Leave this room</a>
+        <div id="Messages"></div>
+    </body>
+</html>
